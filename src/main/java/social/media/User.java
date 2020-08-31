@@ -17,7 +17,7 @@ public class User {
 
     public static User getUserByName(Set<User> users, String userName) {
         for(User user : users)
-            if (user.getName() == userName) {
+            if (user.getName().equals(userName)) {
                 return user;
             }
         return new User(userName);

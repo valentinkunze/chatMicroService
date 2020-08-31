@@ -57,9 +57,9 @@
 
 <script type="text/javascript">
     var connected = false;
-    var loginSocket;
-    var chatSockets = [];
-    // var activeChats = [];
+    var chatSocket;
+
+    $("#chat").attr("disabled", true);
 
     $( document ).ready(function() {
         $("#goOnline").click(goOnline);
@@ -85,41 +85,38 @@
         $("#name").focus();
     });
 
-    // TODO not Websockets but Http Request (take from update receivers but make a POST)
+
     var goOnline = function(){
         if (! connected) {
-            var senderName = $("#name").val();
+            const senderName = $("#name").val();
             console.log("Val: " + senderName);
-
-            // const http = new XMLHttpRequest();
-            // const url='http://localhost:8080/users/' + name;
-            // http.open("POST", url);
-            // http.send();
-            // console.log("Going online");
-            // $("#send").attr("disabled", false);
-            // $("#goOnline").attr("disabled", true);
-            // $("#name").attr("disabled", true);
-            // $("#msg").focus();
-            // updateReceivers();
-            loginSocket = new WebSocket("ws://" + location.host + "/chat/" + senderName);
-
-            loginSocket.onopen = function() {
+            chatSocket = new WebSocket("ws://" + location.host + "/chat/" + senderName);
+            chatSocket.onopen = function() {
                 connected = true;
                 console.log("Connected to the web socket");
-                $("#send").attr("disabled", false);
                 $("#goOnline").attr("disabled", true);
                 $("#name").attr("disabled", true);
+                $("#chat").attr("disabled", true);
+
+                $("#send").attr("disabled", false);
+
                 $("#msg").focus();
                 updateReceivers();
             };
-            loginSocket.onmessage =function(m) {
-                console.log("Got message: " + m.data);
-                if(m.data == "New User") {
+            chatSocket.onmessage =function(m) {
+                const message = m.data;
+                console.log("Got message: " + message);
+                if(message == "New User") {
                     updateReceivers();
                 } else {
-                    // TODO if receiver not selected dont paste new message to chat.
-                    $("#chat").append(m.data + "\n");
-                    scrollToBottom();
+                    const selectReceiver = document.getElementById("receiverName");
+                    const receiverName = selectReceiver.options[selectReceiver.selectedIndex].text;
+                    const jsonMessage = JSON.parse(message);
+                    if(jsonMessage.senderName === receiverName){
+                        // TODO delete newLine character and include in message
+                        $("#chat").append(jsonMessage.content + "\n");
+                        scrollToBottom();
+                    }
                 }
             };
         }
@@ -128,55 +125,24 @@
     var changeChat = function(){
     }
 
-    // TODO create chatSocket for each active chat. Send to new WebSocket("ws://" + location.host + "/chat/" + receiverName);
-    // TODO update own chat in frontend / not by getting a message over websocket (each receiver has a websocket not one per chat)
     var sendMessage = function() {
         // if (connected) {
 
-        var select = document.getElementById("receiverName");
-        const receiverName = select.options[select.selectedIndex].text;
-        console.log("Val: " + name);
-
-        // if (!activeChats.includes(receiverName)) {
-        //     var chatSocket = new WebSocket("ws://" + location.host + "/chat/" + receiverName);
-        //     chatSocket.onopen = function() {
-        //         connected = true;
-        //         console.log("Connected to the web socket");
-        //         $("#send").attr("disabled", false);
-        //         // $("#name").attr("disabled", true);
-        //         $("#msg").focus();
-        //         // updateReceivers();
-        //     };
-        //     chatSocket.onmessage =function(m) {
-        //         console.log("Got message: " + m.data);
-        //         if(m.data == "New User") {
-        //             updateReceivers();
-        //         } else {
-        //             $("#chat").append(m.data + "\n");
-        //             scrollToBottom();
-        //         }
-        //     };
-        //     // activeChats.push(receiverName);
-        //     // chatSockets.push(chatSocket);
-        //     chatSockets.push([receiverName, chatSocket])
-        // }
-        // var chatSocket = chatSockets.find((socketName, chatSocket) => socketName == receiverName)
-
-        const value = $("#msg").val();
+        const selectReceiver = document.getElementById("receiverName");
+        const receiverName = selectReceiver.options[selectReceiver.selectedIndex].text;
         const senderName = $("#name").val();
-        var message = JSON.stringify([value, receiverName])
+        const message = ">> " + senderName + ": " + $("#msg").val();
 
         var jsonMessage = {};
-        jsonMessage["content"] = value;
         jsonMessage["receiverName"] = receiverName;
-        loginSocket.send(JSON.stringify(jsonMessage));
+        jsonMessage["senderName"] = senderName;
+        jsonMessage["content"] = message
 
-        //
-        //
-        // console.log("Sending " + message);
-        // // chatSocket.send(message);
-        // loginSocket.send(message);
+        chatSocket.send(JSON.stringify(jsonMessage));
+        $("#chat").append(message + "\n");
+        scrollToBottom();
         $("#msg").val("");
+        // console.log("Sending " + message);
         // }
     };
 

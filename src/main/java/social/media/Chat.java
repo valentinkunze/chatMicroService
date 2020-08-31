@@ -37,7 +37,7 @@ public class Chat {
     public static Chat getChatByParticipants(List<Chat> chats, User user1, User user2) {
         Integer chatId = user1.getName().hashCode() + user2.getName().hashCode();
         for(Chat chat : chats)
-            if (chat.getChatId() == chatId) {
+            if (chat.getChatId().equals(chatId)) {
                 return chat;
             }
         return new Chat(user1, user2);
