@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Quarkus Chat!</title>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly-additions.min.css">
+
+    <style>
+        #chat {
+            resize: none;
+            overflow: hidden;
+            min-height: 300px;
+            max-height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-default navbar-pf" role="navigation">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="/">
+            <p><strong>>> Quarkus Chat!</strong></p>
+        </a>
+    </div>
+</nav>
+<div class="container">
+    <br/>
+    <div class="row">
+        <input id="name" class="col-md-6" type="text" placeholder="sender name">
+        <button id="goOnline" class="col-md-2 btn btn-primary" type="button">Go Online</button>
+        <br/>
+        <br/>
+    </div>
+    <div class="row">
+        <select id="receiverName" class="col-md-6">
+            <option value="" disabled="disabled" selected="selected">Please select a receiver</option>
+        </select>
+        <br/>
+        <br/>
+    </div>
+    <div class="row">
+          <textarea class="col-md-8" id="chat">
+            </textarea>
+    </div>
+    <div class="row">
+        <input class="col-md-6" id="msg" type="text" placeholder="enter your message">
+        <button class="col-md-1 btn btn-primary" id="send" type="button" disabled>send</button>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/js/patternfly.min.js"></script>
+
+<script type="text/javascript">
+    var connected = false;
+    var loginSocket;
+    var chatSockets = [];
+    // var activeChats = [];
+
+    $( document ).ready(function() {
+        $("#goOnline").click(goOnline);
+        $("#send").click(sendMessage);
+        $("#receiverName").change(changeChat);
+
+        $("#name").keypress(function(event){
+            if(event.keyCode == 13 || event.which == 13) {
+                goOnline();
+            }
+        });
+
+        $("#msg").keypress(function(event) {
+            if(event.keyCode == 13 || event.which == 13) {
+                sendMessage();
+            }
+        });
+
+        $("#chat").change(function() {
+            scrollToBottom();
+        });
+
+        $("#name").focus();
+    });
+
+    // TODO not Websockets but Http Request (take from update receivers but make a POST)
+    var goOnline = function(){
+        if (! connected) {
+            var senderName = $("#name").val();
+            console.log("Val: " + senderName);
+
+            // const http = new XMLHttpRequest();
+            // const url='http://localhost:8080/users/' + name;
+            // http.open("POST", url);
+            // http.send();
+            // console.log("Going online");
+            // $("#send").attr("disabled", false);
+            // $("#goOnline").attr("disabled", true);
+            // $("#name").attr("disabled", true);
+            // $("#msg").focus();
+            // updateReceivers();
+            loginSocket = new WebSocket("ws://" + location.host + "/chat/" + senderName);
+
+            loginSocket.onopen = function() {
+                connected = true;
+                console.log("Connected to the web socket");
+                $("#send").attr("disabled", false);
+                $("#goOnline").attr("disabled", true);
+                $("#name").attr("disabled", true);
+                $("#msg").focus();
+                updateReceivers();
+            };
+            loginSocket.onmessage =function(m) {
+                console.log("Got message: " + m.data);
+                if(m.data == "New User") {
+                    updateReceivers();
+                } else {
+                    // TODO if receiver not selected dont paste new message to chat.
+                    $("#chat").append(m.data + "\n");
+                    scrollToBottom();
+                }
+            };
+        }
+    }
+
+    var changeChat = function(){
+    }
+
+    // TODO create chatSocket for each active chat. Send to new WebSocket("ws://" + location.host + "/chat/" + receiverName);
+    // TODO update own chat in frontend / not by getting a message over websocket (each receiver has a websocket not one per chat)
+    var sendMessage = function() {
+        // if (connected) {
+
+        var select = document.getElementById("receiverName");
+        const receiverName = select.options[select.selectedIndex].text;
+        console.log("Val: " + name);
+
+        // if (!activeChats.includes(receiverName)) {
+        //     var chatSocket = new WebSocket("ws://" + location.host + "/chat/" + receiverName);
+        //     chatSocket.onopen = function() {
+        //         connected = true;
+        //         console.log("Connected to the web socket");
+        //         $("#send").attr("disabled", false);
+        //         // $("#name").attr("disabled", true);
+        //         $("#msg").focus();
+        //         // updateReceivers();
+        //     };
+        //     chatSocket.onmessage =function(m) {
+        //         console.log("Got message: " + m.data);
+        //         if(m.data == "New User") {
+        //             updateReceivers();
+        //         } else {
+        //             $("#chat").append(m.data + "\n");
+        //             scrollToBottom();
+        //         }
+        //     };
+        //     // activeChats.push(receiverName);
+        //     // chatSockets.push(chatSocket);
+        //     chatSockets.push([receiverName, chatSocket])
+        // }
+        // var chatSocket = chatSockets.find((socketName, chatSocket) => socketName == receiverName)
+
+        const value = $("#msg").val();
+        const senderName = $("#name").val();
+        var message = JSON.stringify([value, receiverName])
+
+        var jsonMessage = {};
+        jsonMessage["content"] = value;
+        jsonMessage["receiverName"] = receiverName;
+        loginSocket.send(JSON.stringify(jsonMessage));
+
+        //
+        //
+        // console.log("Sending " + message);
+        // // chatSocket.send(message);
+        // loginSocket.send(message);
+        $("#msg").val("");
+        // }
+    };
+
+    var updateReceivers = function() {
+        const http = new XMLHttpRequest();
+        const url='http://localhost:8080/users';
+        http.open("GET", url);
+        http.send();
+
+        var select = document.getElementById("receiverName");
+        var length = select.options.length;
+        for (i = length-1; i > 0; i--) {
+            select.options[i] = null;
+        }
+
+        http.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var json = JSON.parse(this.responseText);
+                json.forEach(function (item, index) {
+                    $("#receiverName").append('<option value=' + index + '>' + item.name + '</option>');
+                    console.log(item, index);
+                });
+            }
+        };
+    };
+
+    var scrollToBottom = function () {
+        $('#chat').scrollTop($('#chat')[0].scrollHeight);
+    };
+
+</script>
+</body>
+
+</html>
