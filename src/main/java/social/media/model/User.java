@@ -1,7 +1,4 @@
-package social.media;
-
-import java.util.List;
-import java.util.Set;
+package social.media.model;
 
 public class User {
 
@@ -15,8 +12,8 @@ public class User {
         return name;
     }
 
-    public static User getUserByName(Set<User> users, String userName) {
-        for(User user : users)
+    public static User getUserByName(String userName) {
+        for(User user : UserResource.users)
             if (user.getName().equals(userName)) {
                 return user;
             }

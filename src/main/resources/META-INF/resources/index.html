@@ -65,23 +65,19 @@
         $("#goOnline").click(goOnline);
         $("#send").click(sendMessage);
         $("#receiverName").change(changeChat);
-
         $("#name").keypress(function(event){
             if(event.keyCode == 13 || event.which == 13) {
                 goOnline();
             }
         });
-
         $("#msg").keypress(function(event) {
             if(event.keyCode == 13 || event.which == 13) {
                 sendMessage();
             }
         });
-
         $("#chat").change(function() {
             scrollToBottom();
         });
-
         $("#name").focus();
     });
 
@@ -96,10 +92,8 @@
                 console.log("Connected to the web socket");
                 $("#goOnline").attr("disabled", true);
                 $("#name").attr("disabled", true);
-                $("#chat").attr("disabled", true);
-
+                $("#chat").attr("disabled", false);
                 $("#send").attr("disabled", false);
-
                 $("#msg").focus();
                 updateReceivers();
             };
@@ -114,7 +108,7 @@
                     const jsonMessage = JSON.parse(message);
                     if(jsonMessage.senderName === receiverName){
                         // TODO delete newLine character and include in message
-                        $("#chat").append(jsonMessage.content + "\n");
+                        $("#chat").val($("#chat").val() + jsonMessage.content + "\n");
                         scrollToBottom();
                     }
                 }
@@ -123,11 +117,31 @@
     }
 
     var changeChat = function(){
+        $("#msg").focus();
+        $("#msg").val("");
+        $("#chat").val("");
+
+        const selectReceiver = document.getElementById("receiverName");
+        const receiverName = selectReceiver.options[selectReceiver.selectedIndex].text;
+        const senderName = $("#name").val();
+        const url='http://localhost:8080/chatHistory/' + receiverName + '/' + senderName;
+        const http = new XMLHttpRequest();
+        http.open("GET", url);
+        http.send();
+
+        http.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                const jsonChat = JSON.parse(this.responseText);
+                var message = "";
+                for(var i = 0; i<jsonChat.messages.length; i++){
+                    message = message + jsonChat.messages[i].contend + "\n" ;
+                }
+                $("#chat").val($("#chat").val() + message);
+            }
+        };
     }
 
     var sendMessage = function() {
-        // if (connected) {
-
         const selectReceiver = document.getElementById("receiverName");
         const receiverName = selectReceiver.options[selectReceiver.selectedIndex].text;
         const senderName = $("#name").val();
@@ -139,11 +153,9 @@
         jsonMessage["content"] = message
 
         chatSocket.send(JSON.stringify(jsonMessage));
-        $("#chat").append(message + "\n");
+        $("#chat").val($("#chat").val() + message +  "\n");
         scrollToBottom();
         $("#msg").val("");
-        // console.log("Sending " + message);
-        // }
     };
 
     var updateReceivers = function() {
@@ -175,5 +187,4 @@
 
 </script>
 </body>
-
 </html>

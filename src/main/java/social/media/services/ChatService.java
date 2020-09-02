@@ -1,4 +1,6 @@
-package social.media;
+package social.media.services;
+
+import social.media.model.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.json.bind.Jsonb;
@@ -6,7 +8,6 @@ import javax.json.bind.JsonbBuilder;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,8 +17,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ChatService {
 
     Map<String, Session> sessions = new ConcurrentHashMap<>();
-    ArrayList<Chat> chats = new ArrayList<>();
-
 
     @OnOpen
     public void onOpen(Session session, @PathParam("userName") String senderName) {
@@ -47,21 +46,15 @@ public class ChatService {
 //            throw new IllegalArgumentException();
 //        }
 
-        Jsonb jsonb = JsonbBuilder.create();
-        JsonMessage jsonMessage = jsonb.fromJson(message, JsonMessage.class);
-        String messageContent = jsonMessage.getContent();
-        String receiverName = jsonMessage.getReceiverName();
-
-        // TODO getUserByName(senderName)
-        final User sender = User.getUserByName(UserResource.users, senderName);
-        final User receiver = User.getUserByName(UserResource.users, receiverName);
-        final Chat chat = Chat.getChatByParticipants(chats, sender, receiver);
-
-        if(!chats.contains(chat)) {
-            chats.add(chat);
-        }
+        final JsonMessage jsonMessage = JsonbBuilder.create().fromJson(message, JsonMessage.class);
+        final String messageContent = jsonMessage.getContent();
+        final String receiverName = jsonMessage.getReceiverName();
+        final User sender = User.getUserByName(senderName);
+        final User receiver = User.getUserByName(receiverName);
+        final Chat chat = Chat.getChatByParticipants(sender, receiver);
+        final Integer chatId = senderName.hashCode() + receiverName.hashCode();
         chat.getMessages().add(new Message(sender, receiver, messageContent));
-
+        ChatResource.chats.put(chatId, chat);
         sendMessage(receiver, message);
     }
 
@@ -86,18 +79,6 @@ public class ChatService {
                         }
                     });
                 });
-    }
-
-    // TODO persist message and send it to receiver
-
-    private void broadcast(String message) {
-        sessions.values().forEach(s -> {
-            s.getAsyncRemote().sendObject(message, result ->  {
-                if (result.getException() != null) {
-                    System.out.println("Unable to send message: " + result.getException());
-                }
-            });
-        });
     }
 }
 

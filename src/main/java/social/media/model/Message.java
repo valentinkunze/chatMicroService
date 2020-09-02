@@ -1,6 +1,6 @@
-package social.media;
+package social.media.model;
 
-import java.util.UUID;
+import javax.json.bind.annotation.JsonbProperty;
 
 public class Message {
 
@@ -9,7 +9,7 @@ public class Message {
     private User sender;
     private User receiver;
     private String contend;
-    private final UUID messageId = UUID.randomUUID();
+    // todo timestamp
 
     //---- Constructor
 
@@ -31,10 +31,6 @@ public class Message {
 
     public String getContend() {
         return contend;
-    }
-
-    public UUID getMessageId() {
-        return messageId;
     }
 
 }

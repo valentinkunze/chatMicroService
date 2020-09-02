@@ -1,16 +1,12 @@
-package social.media;
+package social.media.model;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class Chat {
 
     private User user1;
     private User user2;
     private Integer chatId;
-
     private ArrayList<Message> messages = new ArrayList<>();
 
     public Chat(User user1, User user2){
@@ -34,12 +30,15 @@ public class Chat {
         return messages;
     }
 
-    public static Chat getChatByParticipants(List<Chat> chats, User user1, User user2) {
-        Integer chatId = user1.getName().hashCode() + user2.getName().hashCode();
-        for(Chat chat : chats)
-            if (chat.getChatId().equals(chatId)) {
-                return chat;
-            }
+    public static Integer getChatId(User user1, User user2) {
+        return user1.getName().hashCode() + user2.getName().hashCode();
+    }
+
+    public static Chat getChatByParticipants(User user1, User user2) {
+        Integer chatId = getChatId(user1, user2);
+        if (ChatResource.chats.containsKey(chatId)){
+            return ChatResource.chats.get(chatId);
+        }
         return new Chat(user1, user2);
     }
 

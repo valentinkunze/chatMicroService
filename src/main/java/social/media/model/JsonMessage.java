@@ -1,4 +1,4 @@
-package social.media;
+package social.media.model;
 
 import javax.json.bind.annotation.JsonbProperty;
 
