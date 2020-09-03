@@ -124,7 +124,7 @@
         const selectReceiver = document.getElementById("receiverName");
         const receiverName = selectReceiver.options[selectReceiver.selectedIndex].text;
         const senderName = $("#name").val();
-        const url='http://localhost:8080/chatHistory/' + receiverName + '/' + senderName;
+        const url='http://' + location.host + '/chatHistory/' + receiverName + '/' + senderName;
         const http = new XMLHttpRequest();
         http.open("GET", url);
         http.send();
@@ -160,7 +160,7 @@
 
     var updateReceivers = function() {
         const http = new XMLHttpRequest();
-        const url='http://localhost:8080/users';
+        const url='http://' + location.host + '/users';
         http.open("GET", url);
         http.send();
 
