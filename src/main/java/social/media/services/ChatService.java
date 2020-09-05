@@ -3,7 +3,7 @@ package social.media.services;
 import social.media.model.*;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.json.bind.Jsonb;
+import javax.inject.Inject;
 import javax.json.bind.JsonbBuilder;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -18,26 +18,33 @@ public class ChatService {
 
     Map<String, Session> sessions = new ConcurrentHashMap<>();
 
+    @Inject
+    MessageRepository messageRepository;
+
+    @Inject
+    UserRepository userRepository;
+
     @OnOpen
     public void onOpen(Session session, @PathParam("userName") String senderName) {
-        if(!UserResource.users.stream().anyMatch(user -> user.getName().equals(senderName))) {
-            sessions.put(senderName, session);
-            User user = new User(senderName);
-            UserResource.users.add(user);
-            notifyUsersWhenNewUserRegisters(user);
+        if(sessions.keySet().contains(senderName)){
+            //        if(!UserResource.users.stream().anyMatch(user -> user.getUserName().equals(senderName))) {
         }
+        sessions.put(senderName, session);
+        // todo make callback function instread of thread
+        addUserToDatabase(senderName);
+        notifyUsersWhenNewUserRegisters(senderName);
     }
 
     @OnClose
     public void onClose(Session session, @PathParam("userName") String senderName) {
         sessions.remove(senderName);
-        UserResource.users.removeIf(user -> !user.getName().equals(senderName));
+        userRepository.delete(userRepository.findByName(senderName));
     }
 
     @OnError
     public void onError(Session session, @PathParam("userName") String senderName, Throwable throwable) {
         sessions.remove(senderName);
-        UserResource.users.removeIf(user -> !user.getName().equals(senderName));
+        userRepository.delete(userRepository.findByName(senderName));
     }
 
     @OnMessage
@@ -45,21 +52,41 @@ public class ChatService {
 //        if(!UserResource.users.stream().anyMatch(user -> user.getName() == senderName && user.getName().equals(receiverName))) {
 //            throw new IllegalArgumentException();
 //        }
-
         final JsonMessage jsonMessage = JsonbBuilder.create().fromJson(message, JsonMessage.class);
         final String messageContent = jsonMessage.getContent();
         final String receiverName = jsonMessage.getReceiverName();
-        final User sender = User.getUserByName(senderName);
-        final User receiver = User.getUserByName(receiverName);
-        final Chat chat = Chat.getChatByParticipants(sender, receiver);
-        final Integer chatId = senderName.hashCode() + receiverName.hashCode();
-        chat.getMessages().add(new Message(sender, receiver, messageContent));
-        ChatResource.chats.put(chatId, chat);
-        sendMessage(receiver, message);
+        addMessageToDatabase(senderName, receiverName, messageContent);
+        sendMessage(receiverName, message);
     }
 
-    private void sendMessage(User receiver, String message) {
-        sessions.get(receiver.getName())
+    private void addUserToDatabase(String userName) {
+        Thread sendMessageThread = new Thread() {
+            public void run() {
+                try {
+                    userRepository.addUser(userName);
+                } catch(Exception v) {
+                    System.out.println(v);
+                }
+            }
+        };
+        sendMessageThread.start();
+    }
+
+    private void addMessageToDatabase(String senderName, String receiverName, String messageContent) {
+        Thread sendMessageThread = new Thread() {
+            public void run() {
+                try {
+                    messageRepository.addMessage(senderName, receiverName, messageContent);
+                } catch(Exception v) {
+                    System.out.println(v);
+                }
+            }
+        };
+        sendMessageThread.start();
+    }
+
+    private void sendMessage(String receiverName, String message) {
+        sessions.get(receiverName)
                 .getAsyncRemote()
                 .sendObject(message, result -> {
                     if (result.getException() != null) {
@@ -68,10 +95,10 @@ public class ChatService {
                 });
     }
 
-    private void notifyUsersWhenNewUserRegisters(User user) {
+    private void notifyUsersWhenNewUserRegisters(String senderName) {
         final String message = "New User";
         sessions.values().stream()
-                .filter(session -> session != sessions.get(user.getName()))
+                .filter(session -> session != sessions.get(senderName))
                 .forEach(s -> {
                     s.getAsyncRemote().sendObject(message, result ->  {
                         if (result.getException() != null) {

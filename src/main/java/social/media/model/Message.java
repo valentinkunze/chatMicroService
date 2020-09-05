@@ -1,36 +1,67 @@
 package social.media.model;
 
-import javax.json.bind.annotation.JsonbProperty;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
-public class Message {
+import javax.persistence.Entity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-    //---- Fields
+@Entity
+public class Message extends PanacheEntity {
 
-    private User sender;
-    private User receiver;
-    private String contend;
-    // todo timestamp
+    private String userName1;
+    private String userName2;
+    private Integer chatId;
+    private String message;
+    private LocalDateTime sendTime;
 
-    //---- Constructor
-
-    public Message(User sender, User receiver, String contend){
-        this.sender = sender;
-        this.receiver = receiver;
-        this.contend = contend;
+    public static Integer getChatId(String user1, String user2) {
+        return user1.hashCode() + user2.hashCode();
     }
 
-    //---- Methods
-
-    public User getSender() {
-      return sender;
+    public Message(String userName1, String userName2, String message, LocalDateTime sendTime){
+        this.userName1 = userName1;
+        this.userName2 = userName2;
+        this.message = message;
+        this.sendTime = sendTime;
+        chatId = getChatId(userName1, userName2);
     }
 
-    public User getReceiver() {
-        return receiver;
+    public Message() {
     }
 
-    public String getContend() {
-        return contend;
+    public String getUserName1(){
+        return userName1;
+    }
+    public void setUserName1(String user1){
+        this.userName1 = user1;
     }
 
+    public String getUserName2(){
+        return userName2;
+    }
+    public void setUserName2(String user2){
+        this.userName2 = user2;
+    }
+
+    public Integer getChatId(){
+        return chatId;
+    }
+    public void setChatId(Integer chatId){
+        this.chatId = chatId;
+    }
+
+    public String getMessage(){
+        return message;
+    }
+    public void setMessage(String message){
+        this.message = message;
+    }
+
+    public LocalDateTime getSendTime() {
+        return sendTime;
+    }
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = sendTime;
+    }
 }

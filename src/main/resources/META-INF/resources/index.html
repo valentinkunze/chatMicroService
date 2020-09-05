@@ -133,8 +133,8 @@
             if (this.readyState == 4 && this.status == 200) {
                 const jsonChat = JSON.parse(this.responseText);
                 var message = "";
-                for(var i = 0; i<jsonChat.messages.length; i++){
-                    message = message + jsonChat.messages[i].contend + "\n" ;
+                for(var i = 0; i<jsonChat.length; i++){
+                    message = message + jsonChat[i].message + "\n" ;
                 }
                 $("#chat").val($("#chat").val() + message);
             }
@@ -173,10 +173,13 @@
         http.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 var json = JSON.parse(this.responseText);
-                json.forEach(function (item, index) {
-                    $("#receiverName").append('<option value=' + index + '>' + item.name + '</option>');
-                    console.log(item, index);
-                });
+                for(var i = 0; i<json.length; i++){
+                    $("#receiverName").append('<option value=' + (i + 1) + '>' + json[i].userName + '</option>');
+                }
+                // json.forEach(function (item, index) {
+                //     $("#receiverName").append('<option value=' + index + '>' + item.name + '</option>');
+                //     console.log(item, index);
+                // });
             }
         };
     };
