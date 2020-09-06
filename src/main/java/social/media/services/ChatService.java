@@ -30,8 +30,10 @@ public class ChatService {
             //        if(!UserResource.users.stream().anyMatch(user -> user.getUserName().equals(senderName))) {
         }
         sessions.put(senderName, session);
-        // todo make callback function instread of thread
-        addUserToDatabase(senderName);
+        // todo make callback function
+        new Thread(() -> {
+            userRepository.addUser(senderName);
+        }).start();
         notifyUsersWhenNewUserRegisters(senderName);
     }
 
@@ -55,36 +57,13 @@ public class ChatService {
         final JsonMessage jsonMessage = JsonbBuilder.create().fromJson(message, JsonMessage.class);
         final String messageContent = jsonMessage.getContent();
         final String receiverName = jsonMessage.getReceiverName();
-        addMessageToDatabase(senderName, receiverName, messageContent);
+        new Thread(() -> {
+            messageRepository.addMessage(senderName, receiverName, messageContent);;
+        }).start();
+
         sendMessage(receiverName, message);
     }
-
-    private void addUserToDatabase(String userName) {
-        Thread sendMessageThread = new Thread() {
-            public void run() {
-                try {
-                    userRepository.addUser(userName);
-                } catch(Exception v) {
-                    System.out.println(v);
-                }
-            }
-        };
-        sendMessageThread.start();
-    }
-
-    private void addMessageToDatabase(String senderName, String receiverName, String messageContent) {
-        Thread sendMessageThread = new Thread() {
-            public void run() {
-                try {
-                    messageRepository.addMessage(senderName, receiverName, messageContent);
-                } catch(Exception v) {
-                    System.out.println(v);
-                }
-            }
-        };
-        sendMessageThread.start();
-    }
-
+    
     private void sendMessage(String receiverName, String message) {
         sessions.get(receiverName)
                 .getAsyncRemote()
