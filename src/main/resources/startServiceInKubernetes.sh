@@ -1,36 +1,42 @@
-echo STOP AND DELETE MINIKUBE..................................................................
+echo ___ STOP AND DELETE MINIKUBE ___
+echo
 
 minikube stop
 minikube delete
 
-echo FINISHED STOPPING AND DELETING MINIKUBE...................................................
-echo ..........................................................................................
-echo START MINIKUBE............................................................................
+echo
+echo ___ FINISHED STOPPING AND DELETING MINIKUBE ___
+echo ___ START MINIKUBE ___
+echo
 
 minikube start
 
-echo FINISHED STARTING MINIKUBE................................................................
-echo ..........................................................................................
-echo SETTING ENVIRONMENT VARIABLES OF MINIKUBE.................................................
+echo
+echo ___ FINISHED STARTING MINIKUBE ___
+echo ___ SETTING ENVIRONMENT VARIABLES OF MINIKUBE ___
+echo
 
 eval $(minikube docker-env)
 
-echo FINISHED SETTING ENVIRONMENT VARIABLES OF MINIKUBE........................................
-echo ..........................................................................................
-echo START BUILDING DOCKER IMAGE...............................................................
+echo
+echo ___ FINISHED SETTING ENVIRONMENT VARIABLES OF MINIKUBE ___
+echo ___ START BUILDING DOCKER IMAGE ___
+echo
 
 cd ../../..
 ./mvnw clean package -Dquarkus.container-image.build=true
 
-echo FINISHED BUILDING DOCKER IMAGE............................................................
-echo ..........................................................................................
-echo START PUSHING SERVICE TO MINIKUBE CLUSTER.................................................
+echo
+echo ___ FINISHED BUILDING DOCKER IMAGE ___
+echo ___ START PUSHING SERVICE TO MINIKUBE CLUSTER ___
+echo
 
 kubectl apply -f target/kubernetes/minikube.json
 
-echo FINISHED PUSHING SERVICE TO MINIKUBE CLUSTER.................................................
-echo .............................................................................................
-echo START SERVICE IN MINIKUBE CLUSTER............................................................
+echo
+echo ___ FINISHED PUSHING SERVICE TO MINIKUBE CLUSTER ___
+echo ___ START SERVICE IN MINIKUBE CLUSTER ___
+echo
 
 minikube service list
 minikube service chat-microservice

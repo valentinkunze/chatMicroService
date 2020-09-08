@@ -30,6 +30,7 @@ public class ChatService {
             //        if(!UserResource.users.stream().anyMatch(user -> user.getUserName().equals(senderName))) {
         }
         sessions.put(senderName, session);
+
         // todo make callback function
         new Thread(() -> {
             userRepository.addUser(senderName);
