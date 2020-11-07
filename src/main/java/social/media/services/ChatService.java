@@ -8,6 +8,7 @@ import javax.json.bind.JsonbBuilder;
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,7 +28,7 @@ public class ChatService {
     @OnOpen
     public void onOpen(Session session, @PathParam("userName") String senderName) {
         if(sessions.keySet().contains(senderName)){
-            //        if(!UserResource.users.stream().anyMatch(user -> user.getUserName().equals(senderName))) {
+            notifyUserThatUsernameIsNotAvailable(senderName);
         }
         sessions.put(senderName, session);
 
@@ -52,16 +53,15 @@ public class ChatService {
 
     @OnMessage
     public void onMessage(String message, @PathParam("userName") String senderName) {
-//        if(!UserResource.users.stream().anyMatch(user -> user.getName() == senderName && user.getName().equals(receiverName))) {
-//            throw new IllegalArgumentException();
-//        }
         final JsonMessage jsonMessage = JsonbBuilder.create().fromJson(message, JsonMessage.class);
         final String messageContent = jsonMessage.getContent();
         final String receiverName = jsonMessage.getReceiverName();
+        if(!sessions.keySet().contains(senderName) || !sessions.keySet().contains(receiverName)) {
+            return;
+        }
         new Thread(() -> {
             messageRepository.addMessage(senderName, receiverName, messageContent);;
         }).start();
-
         sendMessage(receiverName, message);
     }
     
@@ -79,6 +79,19 @@ public class ChatService {
         final String message = "New User";
         sessions.values().stream()
                 .filter(session -> session != sessions.get(senderName))
+                .forEach(s -> {
+                    s.getAsyncRemote().sendObject(message, result ->  {
+                        if (result.getException() != null) {
+                            System.out.println("Unable to send message: " + result.getException());
+                        }
+                    });
+                });
+    }
+
+    private void notifyUserThatUsernameIsNotAvailable(String senderName) {
+        final String message = "Username is not Available";
+        sessions.values().stream()
+                .filter(session -> session == sessions.get(senderName))
                 .forEach(s -> {
                     s.getAsyncRemote().sendObject(message, result ->  {
                         if (result.getException() != null) {

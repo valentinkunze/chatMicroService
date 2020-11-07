@@ -5,9 +5,11 @@ import social.media.model.Message;
 import social.media.model.MessageRepository;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
 import java.util.List;
 
 @Path("/chatHistory")
@@ -36,16 +38,4 @@ public class MessageResource {
     public List<Message> getMessages(@PathParam("senderName") String senderName, @PathParam("receiverName") String receiverName) {
         return messageRepository.findAllMessagesByNames(senderName, receiverName);
     }
-
-//    @POST
-//    public Chat add(Integer chatId, Chat chat) {
-//        chats.put(chatId, chat);
-//        return chat;
-//    }
-//
-//    @DELETE
-//    public Chat delete(Integer chatId, Chat chat) {
-//        chats.remove(chatId, chat);
-//        return chat;
-//    }
 }

@@ -1,6 +1,9 @@
 package social.media.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.smallrye.mutiny.Multi;
+import io.vertx.mutiny.pgclient.PgPool;
+import io.vertx.mutiny.sqlclient.Row;
 import social.media.services.UserResource;
 
 import javax.json.bind.annotation.JsonbProperty;
@@ -16,11 +19,14 @@ public class ChatUser extends PanacheEntity {
     private String userName;
 
 
-    public ChatUser() {
-    }
+    public ChatUser() { }
 
     public ChatUser(String userName) {
         this.userName = userName;
+    }
+
+    public static ChatUser from(Row row) {
+        return new ChatUser(row.getString("userName"));
     }
 
     public Long getId(){
