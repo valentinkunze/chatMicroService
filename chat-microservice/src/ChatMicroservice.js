@@ -4,21 +4,17 @@ import '@material/mwc-top-app-bar';
 import '@material/mwc-list/mwc-list.js';
 import '@material/mwc-list/mwc-list-item.js';
 import '@material/mwc-icon-button';
-import './views/ResultsView.js';
+import './views/ChatView.js';
 import './views/LoginView.js';
 import page from 'page';
 
 export class ChatMicroservice extends LitElement {
   static get properties() {
     return {
-      showSidebar: {
-        type: Boolean,
-      },
+      showSidebar: { type: Boolean },
+      hasChosenName: { type: Boolean },
+      userName: { type: String },
       currentView: { type: String },
-      alreadySearched: { type: Boolean },
-      latitude: { type: String },
-      longitude: { type: String },
-      radius: { type: Number },
     };
   }
 
@@ -26,10 +22,8 @@ export class ChatMicroservice extends LitElement {
     super();
     this.showSidebar = false;
     this.currentView = 'login';
-    this.alreadySearched = false;
-    this.latitude = '47.3902';
-    this.longitude = '8.5158';
-    this.radius = 1000;
+    this.hasChosenName = false;
+    this.userName = ' ';
     this._initializeRoutes();
   }
 
@@ -73,53 +67,46 @@ export class ChatMicroservice extends LitElement {
           <mwc-list-item @click="${() => this._navigateToUrl('/login')}"
             >Login</mwc-list-item
           >
-          <mwc-list-item @click="${() => this._navigateToUrl('/results')}"
-            >Results</mwc-list-item
+          <mwc-list-item @click="${() => this._navigateToUrl('/chat')}"
+            >Chat</mwc-list-item
           >
         </mwc-list>
 
-        <div slot="appContent">
-          <mwc-top-app-bar>
-            <mwc-icon-button
-              icon="menu"
-              slot="navigationIcon"
-              @click="${() => {
-                this.showSidebar = !this.showSidebar;
-              }}"
-            ></mwc-icon-button>
-            <div slot="title">Quarkus Chat</div>
-          </mwc-top-app-bar>
-          <main>${this._renderCurrentView()}</main>
-        </div>
+        <div slot="appContent">${this._renderAppContent()}</div>
       </mwc-drawer>
     `;
+  }
+
+  _renderAppContent() {
+    if (this.currentView !== 'login') {
+      return html`
+        <mwc-top-app-bar>${this._renderHeader()}</mwc-top-app-bar>
+        <main>${this._renderCurrentView()}</main>
+      `;
+    }
+    return html`<main>${this._renderCurrentView()}</main>`;
+  }
+
+  _renderHeader() {
+    return html`<mwc-icon-button
+        icon="menu"
+        slot="navigationIcon"
+        @click="${() => {
+          this.showSidebar = !this.showSidebar;
+        }}"
+      ></mwc-icon-button>
+      <div slot="title">${`Chat Room (${this.userName})`}</div> `;
   }
 
   _renderCurrentView() {
     switch (this.currentView) {
       case 'login':
         return html`<login-view
-          .latitude="${this.latitude}"
-          .longitude="${this.longitude}"
-          .radius="${this.radius}"
-          @execute-search="${e =>
-            page(
-              `/results/${e.detail.latitude}/${e.detail.longitude}/${e.detail.radius}`
-            )}"
+          .userName="${this.userName}"
+          @execute-search="${e => page(`/chat/${e.detail.userName}`)}"
         ></login-view>`;
-      case 'results':
-        return html`<results-view
-          .latitude="${this.latitude}"
-          .longitude="${this.longitude}"
-          .radius="${this.radius}"
-        >
-          <p>
-            <a
-              href="${`/login/${this.latitude}/${this.longitude}/${this.radius}`}"
-              >← Back to login</a
-            >
-          </p>
-        </results-view>`;
+      case 'chat':
+        return html`<chat-view .userName="${this.userName}"> </chat-view>`;
       default:
         return ``;
     }
@@ -134,49 +121,43 @@ export class ChatMicroservice extends LitElement {
     page('/', () => {
       this.currentView = 'login';
     });
-    page('/results', () => {
-      if (this.alreadySearched) {
-        page.redirect(
-          `/results/${this.latitude}/${this.longitude}/${this.radius}`
-        );
+    page('/login', () => {
+      if (this.hasChosenName) {
+        page.redirect(`/login/${this.userName}`);
+        return;
+      }
+      this.currentView = 'login';
+    });
+    page('/chat', () => {
+      if (this.hasChosenName) {
+        page.redirect(`/chat/${this.userName}`);
         return;
       }
       page.redirect('/login');
     });
-    page('/results/:lat/:lon/:radius', ctx => {
-      this._setSearchParametersFromRouteContext(ctx);
-      this.currentView = 'results';
+    page('/chat/:userName', ctx => {
+      this._setUserNameFromRouteContext(ctx);
+      this.currentView = 'chat';
     });
-    page('/login', () => {
-      if (this.alreadySearched) {
-        page.redirect(
-          `/login/${this.latitude}/${this.longitude}/${this.radius}`
-        );
-        return;
-      }
 
-      this.currentView = 'login';
-    });
-    page('/login/:lat/:lon/:radius', ctx => {
-      this._setSearchParametersFromRouteContext(ctx);
+    page('/login/:userName', ctx => {
+      this._setUserNameFromRouteContext(ctx);
       this.currentView = 'login';
     });
     page();
   }
 
-  _setSearchParametersFromRouteContext(ctx) {
+  _setUserNameFromRouteContext(ctx) {
     const {
-      params: { radius, lat, lon },
+      params: { userName },
     } = ctx;
 
-    if (!radius || !lat || !lon) {
+    if (!userName) {
       return;
     }
 
-    this.radius = radius;
-    this.latitude = lat;
-    this.longitude = lon;
-    this.alreadySearched = true;
+    this.userName = userName;
+    this.hasChosenName = true;
   }
 
   _navigateToUrl(url) {

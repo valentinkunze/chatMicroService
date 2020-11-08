@@ -2,18 +2,18 @@ import { css, html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-export class AmenityItem extends LitElement {
+export class ChatItem extends LitElement {
   static get properties() {
     return {
       name: { type: String },
-      distance: { type: String },
       selected: { type: Boolean },
+      isOnline: { type: Boolean },
     };
   }
 
   static get styles() {
     return css`
-      .amenity-item {
+      .chat-item {
         padding: var(--amenity-container-padding);
         border-bottom: 1px solid hsl(0, 0%, 86%);
         background-color: hsl(0, 0%, 96%);
@@ -22,19 +22,19 @@ export class AmenityItem extends LitElement {
         justify-content: space-between;
       }
 
-      .amenity-item > .name {
+      .chat-item > .name {
         font-size: 125%;
       }
 
-      .amenity-item > .distance {
+      .chat-item > .distance {
         color: #6a7071;
       }
 
-      .amenity-item.-selected {
+      .chat-item.-selected {
         background-color: hsl(0, 0%, 92%);
       }
 
-      .amenity-item.-selected > .distance {
+      .chat-item.-selected > .isOnline {
         color: #535859;
       }
     `;
@@ -44,8 +44,8 @@ export class AmenityItem extends LitElement {
     super();
 
     this.name = '';
-    this.distance = '';
     this.selected = false;
+    this.isOnline = true;
   }
 
   render() {
@@ -54,14 +54,14 @@ export class AmenityItem extends LitElement {
     }
 
     return html`<div
-      class="amenity-item ${classMap({ '-selected': this.selected })}"
+      class="chat-item ${classMap({ '-selected': this.selected })}"
     >
       <span class="name">${this.name}</span>
-      <span class="distance"
-        >${Number.parseFloat(this.distance).toFixed(2)} m</span
+      <span class="isOnline"
+        >${this.isOnline ? 'is Online' : 'is Offline'}</span
       >
     </div>`;
   }
 }
 
-customElements.define('amenity-item', AmenityItem);
+customElements.define('chat-item', ChatItem);

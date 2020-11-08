@@ -12,6 +12,7 @@ $( document ).ready(function() {
             goOnline();
         }
     });
+    $("#name").focus();
     $("#msg").keypress(function(event) {
         if(event.keyCode == 13 || event.which == 13) {
             sendMessage();
@@ -20,10 +21,10 @@ $( document ).ready(function() {
     $("#chat").change(function() {
         scrollToBottom();
     });
-    $("#name").focus();
+
 });
 
-
+// TODO choose better name than senderName (z.B. hostName)
 var goOnline = function(){
     if (! connected) {
         const senderName = $("#name").val();

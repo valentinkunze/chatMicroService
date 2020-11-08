@@ -7,6 +7,7 @@ export class LoginView extends LitElement {
   static get properties() {
     return {
       userName: { type: String },
+      hasChosenName: { type: Boolean },
     };
   }
 
@@ -37,38 +38,38 @@ export class LoginView extends LitElement {
 
   render() {
     return html`
-      <h1>Search</h1>
+      <h1>Login</h1>
 
       <div class="search-form">
         <mwc-textfield
           label="UserName"
-          .value="${this.userName}"
+          .value="${this.userName !== 'default' ? this.userName : ' '}"
           @keyup="${e => {
             this.userName = e.target.value;
+            this.hasChosenName = true;
           }}"
         ></mwc-textfield>
 
         <mwc-button
           raised
-          label="Search"
-          @click="${this._triggerSearch}"
-          .disabled="${!this._canSearch()}"
+          label="Enter Chat"
+          @click="${this._triggerEnterChat}"
+          .disabled="${!this._canEnterChat()}"
         ></mwc-button>
       </div>
     `;
   }
 
-  _canSearch() {
-    return this.latitude && this.longitude && this.radius;
+  _canEnterChat() {
+    return this.hasChosenName;
   }
 
-  _triggerSearch() {
+  _triggerEnterChat() {
     this.dispatchEvent(
       new CustomEvent('execute-search', {
         detail: {
-          latitude: this.latitude,
-          longitude: this.longitude,
-          radius: this.radius,
+          userName: this.userName,
+          hasChosenName: this.hasChosenName,
         },
       })
     );
