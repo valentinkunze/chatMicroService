@@ -8,6 +8,7 @@ import './views/ChatView.js';
 import './views/LoginView.js';
 import page from 'page';
 
+// TODO Change fileName (not className) / make chat-microservice -> frontEnd / backEnd directores
 export class ChatMicroservice extends LitElement {
   static get properties() {
     return {
@@ -30,11 +31,11 @@ export class ChatMicroservice extends LitElement {
   static get styles() {
     return css`
       :host {
-        --amenity-container-padding: 1rem;
+        --chat-container-padding: 1rem;
       }
 
       main {
-        padding: var(--amenity-container-padding, 1rem);
+        padding: var(--chat-container-padding, 1rem);
         box-sizing: border-box;
         display: flex;
         flex: 1;
@@ -78,13 +79,22 @@ export class ChatMicroservice extends LitElement {
   }
 
   _renderAppContent() {
-    if (this.currentView !== 'login') {
-      return html`
-        <mwc-top-app-bar>${this._renderHeader()}</mwc-top-app-bar>
-        <main>${this._renderCurrentView()}</main>
-      `;
+    switch (this.currentView) {
+      case 'login':
+        return html`<main>
+          <login-view
+            .userName="${this.userName}"
+            @execute-search="${e => page(`/chat/${e.detail.userName}`)}"
+          ></login-view>
+        </main>`;
+      case 'chat':
+        return html` <mwc-top-app-bar>${this._renderHeader()}</mwc-top-app-bar>
+          <main><chat-view .userName="${this.userName}"> </chat-view></main>`;
+      default:
+        return html` <mwc-top-app-bar
+          >${this._renderHeader()}</mwc-top-app-bar
+        >`;
     }
-    return html`<main>${this._renderCurrentView()}</main>`;
   }
 
   _renderHeader() {
@@ -95,26 +105,7 @@ export class ChatMicroservice extends LitElement {
           this.showSidebar = !this.showSidebar;
         }}"
       ></mwc-icon-button>
-      <div slot="title">${`Chat Room (${this.userName})`}</div> `;
-  }
-
-  _renderCurrentView() {
-    switch (this.currentView) {
-      case 'login':
-        return html`<login-view
-          .userName="${this.userName}"
-          @execute-search="${e => page(`/chat/${e.detail.userName}`)}"
-        ></login-view>`;
-      case 'chat':
-        return html`<chat-view .userName="${this.userName}"> </chat-view>`;
-      default:
-        return ``;
-    }
-  }
-
-  _navigateTo(view) {
-    this.currentView = view;
-    this.showSidebar = false;
+      <div slot="title">${`Chat Room`}</div> `;
   }
 
   _initializeRoutes() {
@@ -122,10 +113,6 @@ export class ChatMicroservice extends LitElement {
       this.currentView = 'login';
     });
     page('/login', () => {
-      if (this.hasChosenName) {
-        page.redirect(`/login/${this.userName}`);
-        return;
-      }
       this.currentView = 'login';
     });
     page('/chat', () => {
@@ -138,11 +125,6 @@ export class ChatMicroservice extends LitElement {
     page('/chat/:userName', ctx => {
       this._setUserNameFromRouteContext(ctx);
       this.currentView = 'chat';
-    });
-
-    page('/login/:userName', ctx => {
-      this._setUserNameFromRouteContext(ctx);
-      this.currentView = 'login';
     });
     page();
   }

@@ -1,5 +1,4 @@
 import { css, html, LitElement } from 'lit-element';
-import '@inventage/leaflet-map';
 import '@material/mwc-button';
 import '@material/mwc-textfield';
 
@@ -25,9 +24,9 @@ export class LoginView extends LitElement {
         flex: 1;
 
         /* stretch to edges */
-        margin-left: calc(var(--amenity-container-padding) * -1);
-        margin-right: calc(var(--amenity-container-padding) * -1);
-        margin-bottom: calc(var(--amenity-container-padding) * -1);
+        margin-left: calc(var(--chat-container-padding) * -1);
+        margin-right: calc(var(--chat-container-padding) * -1);
+        margin-bottom: calc(var(--chat-container-padding) * -1);
       }
 
       .search-form {
@@ -65,6 +64,7 @@ export class LoginView extends LitElement {
   }
 
   _triggerEnterChat() {
+    // TODO goOnline()
     this.dispatchEvent(
       new CustomEvent('execute-search', {
         detail: {

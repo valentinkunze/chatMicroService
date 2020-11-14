@@ -1,13 +1,13 @@
 import { css, html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
 
-import './ChatItem.js';
+import './UserItem.js';
 import '@material/mwc-textarea';
 
-export class ChatList extends LitElement {
+export class UserList extends LitElement {
   static get properties() {
     return {
-      chats: { type: Array },
+      users: { type: Array },
 
       // Internal properties
       markers: { type: Array, attribute: false },
@@ -17,31 +17,23 @@ export class ChatList extends LitElement {
 
   static get styles() {
     return css`
-      :host {
-        display: flex;
-        flex: 1;
-      }
-
-      .chatList:not(:empty) {
+      .userList:not(:empty) {
         width: 40ch;
         max-width: 30vw;
-      }
-
-      .chat {
-        flex: auto;
-      }
-
-      .chats {
-        flex: auto;
-        display: flex;
       }
     `;
   }
 
+  // :host {
+  //     display: flex;
+  //     flex: 1;
+  //   }
+  //
+
   constructor() {
     super();
 
-    this.chats = [];
+    this.users = [];
     this.markers = [];
     this.selectedMarker = null;
   }
@@ -49,63 +41,55 @@ export class ChatList extends LitElement {
   updated(changedProperties) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('chatList')) {
+    if (changedProperties.has('userList')) {
       this._updateMarkersFromResults();
     }
   }
 
   render() {
-    const messageTemplate = 'Valentin: Hallo\nNoah: Hallo\n';
+    // TODO find friends form field
+    // TODO @keyup="${e => {changeChat()}}"
     return html`
-
-         <div class="chats">
-            <div class="chatList">${this._renderChatList()}</div>
-                <mwc-textarea class="chat"
-                    .value="${messageTemplate}"
-                ></mwc-textarea>
-             </div>
-        </div>
+      <span class="users">
+        <div class="userList">${this._renderUserList()}</div>
+      </span>
     `;
-    //   <mwc-textarea class="chat"
-    //      .value="${messageTemplate}"
-    //      @keyup="${e => {}}"
-    // ></mwc-textarea>
   }
 
-  _renderChatList() {
-    if (!this._hasChats()) {
+  _renderUserList() {
+    if (!this._hasUsers()) {
       return nothing;
     }
 
-    return html`${this.chats.map(result => {
+    return html`${this.users.map(result => {
       const { id, name, isOnline } = result;
 
-      return html`<chat-item
+      return html`<user-item
         .name="${name}"
         .isOnline="${isOnline}"
         .selected="${this.selectedMarker && this.selectedMarker.id === id}"
-        @click="${() => this._selectChat(id)}"
-      ></chat-item>`;
+        @click="${() => this._selectUser(id)}"
+      ></user-item>`;
     })}`;
   }
 
-  _selectChat(id) {
+  _selectUser(id) {
     const selectedMarker = this.markers.find(marker => marker.id === id);
     if (selectedMarker) {
       this.selectedMarker = selectedMarker;
     }
   }
 
-  _hasChats() {
-    return this.chats.length > 0;
+  _hasUsers() {
+    return this.users.length > 0;
   }
 
   _updateMarkersFromResults() {
-    if (this.chats.length < 1) {
+    if (this.users.length < 1) {
       return;
     }
 
-    this.markers = this.chats.map(result => {
+    this.markers = this.users.map(result => {
       const { id, userName, isOnline } = result;
 
       return {
@@ -117,4 +101,4 @@ export class ChatList extends LitElement {
   }
 }
 
-customElements.define('chat-list', ChatList);
+customElements.define('user-list', UserList);

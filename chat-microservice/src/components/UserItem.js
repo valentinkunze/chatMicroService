@@ -2,7 +2,7 @@ import { css, html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 
-export class ChatItem extends LitElement {
+export class UserItem extends LitElement {
   static get properties() {
     return {
       name: { type: String },
@@ -13,8 +13,8 @@ export class ChatItem extends LitElement {
 
   static get styles() {
     return css`
-      .chat-item {
-        padding: var(--amenity-container-padding);
+      .user-item {
+        padding: var(--chat-container-padding);
         border-bottom: 1px solid hsl(0, 0%, 86%);
         background-color: hsl(0, 0%, 96%);
         cursor: pointer;
@@ -22,19 +22,19 @@ export class ChatItem extends LitElement {
         justify-content: space-between;
       }
 
-      .chat-item > .name {
+      .user-item > .name {
         font-size: 125%;
       }
 
-      .chat-item > .distance {
+      .user-item > .isOnline {
         color: #6a7071;
       }
 
-      .chat-item.-selected {
+      .user-item.-selected {
         background-color: hsl(0, 0%, 92%);
       }
 
-      .chat-item.-selected > .isOnline {
+      .user-item.-selected > .isOnline {
         color: #535859;
       }
     `;
@@ -54,7 +54,7 @@ export class ChatItem extends LitElement {
     }
 
     return html`<div
-      class="chat-item ${classMap({ '-selected': this.selected })}"
+      class="user-item ${classMap({ '-selected': this.selected })}"
     >
       <span class="name">${this.name}</span>
       <span class="isOnline"
@@ -64,4 +64,4 @@ export class ChatItem extends LitElement {
   }
 }
 
-customElements.define('chat-item', ChatItem);
+customElements.define('user-item', UserItem);
