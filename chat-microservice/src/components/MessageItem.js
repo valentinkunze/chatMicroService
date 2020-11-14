@@ -35,7 +35,7 @@ export class MessageItem extends LitElement {
 
     return html` <div class="message-item">
       <span>${this.sendTime}</span>
-      <span>${this.senderName} + ':'</span>
+      <span>${`${this.senderName}:`}</span>
       <span>${this.messageContent}</span>
     </div>`;
   }
