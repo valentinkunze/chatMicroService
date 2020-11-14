@@ -8,7 +8,6 @@ import './views/ChatView.js';
 import './views/LoginView.js';
 import page from 'page';
 
-// TODO Change fileName (not className) / make chat-microservice -> frontEnd / backEnd directores
 export class ChatMicroservice extends LitElement {
   static get properties() {
     return {
@@ -25,6 +24,7 @@ export class ChatMicroservice extends LitElement {
     this.currentView = 'login';
     this.hasChosenName = false;
     this.userName = ' ';
+
     this._initializeRoutes();
   }
 

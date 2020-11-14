@@ -4,6 +4,7 @@ import { nothing } from 'lit-html';
 import './UserItem.js';
 import '@material/mwc-textarea';
 
+// TODO trigger event from UserSearchItem to update users
 export class UserList extends LitElement {
   static get properties() {
     return {
@@ -63,8 +64,7 @@ export class UserList extends LitElement {
 
     return html`${this.users.map(result => {
       const { id, name, isOnline } = result;
-
-      return html`<user-item
+      return html` <user-item
         .name="${name}"
         .isOnline="${isOnline}"
         .selected="${this.selectedMarker && this.selectedMarker.id === id}"

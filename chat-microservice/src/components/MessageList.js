@@ -21,6 +21,10 @@ export class MessageList extends LitElement {
         width: 120ch;
         max-width: 90vw;
       }
+
+      .messages {
+        padding-top: var(--chat-container-padding);
+      }
     `;
   }
 

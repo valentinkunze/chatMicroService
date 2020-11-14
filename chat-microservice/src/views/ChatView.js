@@ -3,11 +3,15 @@ import '../components/UserList.js';
 import '../components/UserItem.js';
 import '../components/MessageList.js';
 import '../components/MessageItem.js';
+import '../components/UserSearchItem.js';
+import '../components/MessageHeaderItem.js';
 
 export class ChatView extends LitElement {
   static get properties() {
     return {
       userName: { type: String },
+      selectedUserName: { type: String },
+      searchUserName: { type: String },
       users: { type: Array, attribute: false },
       messages: { type: Array, attribute: false },
     };
@@ -53,6 +57,8 @@ export class ChatView extends LitElement {
         messageContent: 'Yoyo what up?',
       },
     ];
+    this.searchUserName = 'Valentin';
+    this.selectedUserName = 'Valentin';
   }
 
   static get styles() {
@@ -66,28 +72,29 @@ export class ChatView extends LitElement {
         border-right: 10px solid;
         border-right-color: var(--background-color);
       }
-
-      .messages {
-      }
     `;
     // flex: inline-flex;
   }
 
   render() {
     // TODO add send field for writing messages and add sendMessage()
+
     return html`
       <div class="chat">
         <div class="users">
+          <user-search-item>
+            .searchUserName="${this.searchUserName}"
+          </user-search-item>
           <user-list .users="${this.users}"> </user-list>
         </div>
         <div class="messages">
+          <message-header-item
+            .selectedUserName="${this.selectedUserName}"
+          ></message-header-item>
           <message-list .messages="${this.messages}"> </message-list>
         </div>
       </div>
     `;
-    //   <mwc-textarea class="chat"
-    //             .value="${'Valentin: Hallo\nNoah: Hallo\n'}"
-    // ></mwc-textarea>
   }
 }
 

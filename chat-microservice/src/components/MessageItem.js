@@ -16,6 +16,19 @@ export class MessageItem extends LitElement {
         padding: calc(var(--chat-container-padding) / 2);
         background-color: hsl(0, 0%, 96%);
         cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .senderName > span {
+        padding-left: calc(var(--chat-container-padding) / 2);
+      }
+
+      .sendTime > span {
+        color: #6a7071;
+        padding-right: var(--chat-container-padding);
+        padding-bottom: var(--chat-container-padding);
+        font-size: 75%;
       }
     `;
   }
@@ -34,9 +47,13 @@ export class MessageItem extends LitElement {
     }
 
     return html` <div class="message-item">
-      <span>${this.sendTime}</span>
-      <span>${`${this.senderName}:`}</span>
-      <span>${this.messageContent}</span>
+      <div class="senderName">
+        <span>${`${this.senderName}:`}</span>
+        <span>${this.messageContent}</span>
+      </div>
+      <div class="sendTime">
+        <span>${this.sendTime}</span>
+      </div>
     </div>`;
   }
 }
