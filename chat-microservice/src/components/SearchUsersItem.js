@@ -1,4 +1,5 @@
-import { css, html, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
+import { searchUserItemCss } from '../style/components/SearchUsersItem.css.js';
 
 export class SearchUsersItem extends LitElement {
   static get properties() {
@@ -8,19 +9,11 @@ export class SearchUsersItem extends LitElement {
   }
 
   static get styles() {
-    return css`
-      .searchUserName {
-        padding: calc(var(--chat-container-padding) / 2);
-        background-color: hsl(0, 0%, 96%);
-        cursor: pointer;
-        display: flex;
-      }
-    `;
+    return searchUserItemCss;
   }
 
   constructor() {
     super();
-
     this.searchUserName = '';
   }
 

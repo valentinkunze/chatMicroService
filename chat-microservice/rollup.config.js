@@ -29,14 +29,3 @@ export default merge(baseConfig, {
   // optionally set a HTML template manually
   // input: './app.js',
 });
-
-// import cssbundle from 'rollup-plugin-css-bundle';
-//
-// export default {
-//   input: './src/ChatMicroservice.js',
-//   output: {
-//     file: 'dist/index.js',
-//     format: 'cjs'
-//   },
-//   plugins: [cssbundle()]
-// };

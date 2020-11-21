@@ -1,5 +1,6 @@
-import { css, html, LitElement } from 'lit-element';
-// import { nothing } from 'lit-html';
+import { html, LitElement } from 'lit-element';
+import { nothing } from 'lit-html';
+import { messageHeaderItemCss } from '../style/components/MessageHeaderItem.css.js';
 
 export class MessageHeaderItem extends LitElement {
   static get properties() {
@@ -9,36 +10,18 @@ export class MessageHeaderItem extends LitElement {
   }
 
   static get styles() {
-    return css`
-      .messageHeaderItem {
-        background-color: hsl(0, 0%, 96%);
-        display: flex;
-        padding: calc(var(--chat-container-padding) / 4);
-        height: 70px;
-      }
-
-      .userIcon {
-        heigth: max-content;
-        padding: calc(var(--chat-container-padding) / 2);
-      }
-
-      mwc-icon-button {
-        color: green;
-        --mdc-icon-size: 40px;
-      }
-    `;
+    return messageHeaderItemCss;
   }
 
   constructor() {
     super();
-
     this.selectedUserName = '';
   }
 
   render() {
-    // if (!this.selectedUserName) {
-    //   return nothing;
-    // }
+    if (!this.selectedUserName) {
+      return nothing;
+    }
 
     return html`
       <div class="messageHeaderItem">

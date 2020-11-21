@@ -1,6 +1,6 @@
-import { css, html, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
-
+import { messageListCss } from '../style/components/MessageList.css.js';
 import './MessageItem.js';
 import '@material/mwc-textarea';
 
@@ -8,29 +8,17 @@ export class MessageList extends LitElement {
   static get properties() {
     return {
       messages: { type: Array },
-
-      // Internal properties
       markers: { type: Array, attribute: false },
       selectedMarker: { type: Object, attribute: false },
     };
   }
 
   static get styles() {
-    return css`
-      .MessageList:not(:empty) {
-        width: 120ch;
-        max-width: 90vw;
-      }
-
-      .messages {
-        padding-top: var(--chat-container-padding);
-      }
-    `;
+    return messageListCss;
   }
 
   constructor() {
     super();
-
     this.messages = [];
     this.markers = [];
     this.selectedMarker = null;
@@ -44,11 +32,7 @@ export class MessageList extends LitElement {
     }
   }
 
-  // todo clean up MessageItem1 / MessageList1 and MessageList
-  // todo rename files
-
   render() {
-    // TODO find friends form field
     // TODO @keyup="${e => {changeChat()}}"
     return html`
       <div class="messages">

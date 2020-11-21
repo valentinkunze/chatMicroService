@@ -1,6 +1,7 @@
-import { css, html, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { userItemCss } from '../style/components/UserItem.css.js';
 
 export class UserItem extends LitElement {
   static get properties() {
@@ -12,37 +13,11 @@ export class UserItem extends LitElement {
   }
 
   static get styles() {
-    return css`
-      .user-item {
-        padding: calc(var(--chat-container-padding) * 4 / 3);
-        border-bottom: 1px solid hsl(0, 0%, 86%);
-        background-color: hsl(0, 0%, 96%);
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .user-item > .name {
-        font-size: 125%;
-      }
-
-      .user-item > .isOnline {
-        color: #6a7071;
-      }
-
-      .user-item.-selected {
-        background-color: hsl(0, 0%, 92%);
-      }
-
-      .user-item.-selected > .isOnline {
-        color: #535859;
-      }
-    `;
+    return userItemCss;
   }
 
   constructor() {
     super();
-
     this.name = '';
     this.selected = false;
     this.isOnline = true;

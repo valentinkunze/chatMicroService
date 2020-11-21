@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit-element';
+import { LitElement, html } from 'lit-element';
 import '@material/mwc-drawer';
 import '@material/mwc-top-app-bar';
 import '@material/mwc-list/mwc-list.js';
@@ -7,6 +7,7 @@ import '@material/mwc-icon-button';
 import './views/ChatView.js';
 import './views/LoginView.js';
 import page from 'page';
+import { chatMicroserviceCss } from './style/ChatMicroservice.css.js';
 
 export class ChatMicroservice extends LitElement {
   static get properties() {
@@ -29,37 +30,7 @@ export class ChatMicroservice extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        --chat-container-padding: 1rem;
-      }
-
-      main {
-        padding: var(--chat-container-padding, 1rem);
-        box-sizing: border-box;
-        display: flex;
-        flex: 1;
-        max-height: calc(100vh - 64px);
-      }
-
-      [slot='appContent'] {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-
-        /* fixes issues where content would overlay sidebar */
-        z-index: 1;
-        position: relative;
-      }
-
-      .loginView {
-        background-image: url('./ConnectedWorld2.jpg');
-        background-attachment: fixed;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-size: cover;
-      }
-    `;
+    return chatMicroserviceCss;
   }
 
   render() {

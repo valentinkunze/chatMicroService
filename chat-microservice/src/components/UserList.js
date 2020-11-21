@@ -1,5 +1,6 @@
-import { css, html, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import { nothing } from 'lit-html';
+import { userListCss } from '../style/components/UserList.css.js';
 
 import './UserItem.js';
 import '@material/mwc-textarea';
@@ -9,31 +10,22 @@ export class UserList extends LitElement {
   static get properties() {
     return {
       users: { type: Array },
-
-      // Internal properties
       markers: { type: Array, attribute: false },
       selectedMarker: { type: Object, attribute: false },
     };
   }
 
   static get styles() {
-    return css`
-      .userList:not(:empty) {
-        width: 40ch;
-        max-width: 30vw;
-      }
-    `;
+    return userListCss;
+    // :host {
+    //     display: flex;
+    //     flex: 1;
+    //   }
+    //
   }
-
-  // :host {
-  //     display: flex;
-  //     flex: 1;
-  //   }
-  //
 
   constructor() {
     super();
-
     this.users = [];
     this.markers = [];
     this.selectedMarker = null;

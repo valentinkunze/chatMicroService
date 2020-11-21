@@ -1,6 +1,7 @@
-import { css, html, LitElement } from 'lit-element';
+import { html, LitElement } from 'lit-element';
 import '@material/mwc-button';
 import '@material/mwc-textfield';
+import { loginViewCss } from '../style/views/LoginView.css.js';
 
 export class LoginView extends LitElement {
   static get properties() {
@@ -11,35 +12,7 @@ export class LoginView extends LitElement {
   }
 
   static get styles() {
-    return css`
-      :host {
-        --amenity-search-form-spacing: 1rem;
-
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .search-form {
-        margin: auto;
-      }
-
-      .search-form > div {
-        margin: auto;
-      }
-
-      .mwcTextfield {
-        border-bottom: 10px solid transparent;
-      }
-
-      .mwcTextfield > mwc-textfield {
-        background-color: hsl(0, 0%, 92%);
-      }
-
-      mwc-button {
-        display: flex;
-      }
-    `;
+    return loginViewCss;
   }
 
   render() {
