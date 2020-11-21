@@ -1,6 +1,6 @@
 import { css, html, LitElement } from 'lit-element';
 
-export class UserSearchItem extends LitElement {
+export class SearchUsersItem extends LitElement {
   static get properties() {
     return {
       searchUserName: { type: String },
@@ -11,7 +11,6 @@ export class UserSearchItem extends LitElement {
     return css`
       .searchUserName {
         padding: calc(var(--chat-container-padding) / 2);
-        border-bottom: 1px solid hsl(0, 0%, 86%);
         background-color: hsl(0, 0%, 96%);
         cursor: pointer;
         display: flex;
@@ -52,4 +51,4 @@ export class UserSearchItem extends LitElement {
   // }
 }
 
-customElements.define('user-search-item', UserSearchItem);
+customElements.define('search-users-item', SearchUsersItem);

@@ -11,7 +11,6 @@ export class MessageHeaderItem extends LitElement {
   static get styles() {
     return css`
       .messageHeaderItem {
-        border-bottom: 1px solid hsl(0, 0%, 86%);
         background-color: hsl(0, 0%, 96%);
         display: flex;
         padding: calc(var(--chat-container-padding) / 4);

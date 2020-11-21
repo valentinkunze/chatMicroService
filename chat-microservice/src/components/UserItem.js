@@ -14,7 +14,7 @@ export class UserItem extends LitElement {
   static get styles() {
     return css`
       .user-item {
-        padding: var(--chat-container-padding);
+        padding: calc(var(--chat-container-padding) * 4 / 3);
         border-bottom: 1px solid hsl(0, 0%, 86%);
         background-color: hsl(0, 0%, 96%);
         cursor: pointer;

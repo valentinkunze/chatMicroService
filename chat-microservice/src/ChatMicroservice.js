@@ -23,7 +23,7 @@ export class ChatMicroservice extends LitElement {
     this.showSidebar = false;
     this.currentView = 'login';
     this.hasChosenName = false;
-    this.userName = ' ';
+    this.userName = '';
 
     this._initializeRoutes();
   }
@@ -51,6 +51,14 @@ export class ChatMicroservice extends LitElement {
         z-index: 1;
         position: relative;
       }
+
+      .loginView {
+        background-image: url('./ConnectedWorld2.jpg');
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
     `;
   }
 
@@ -72,8 +80,7 @@ export class ChatMicroservice extends LitElement {
             >Chat</mwc-list-item
           >
         </mwc-list>
-
-        <div slot="appContent">${this._renderAppContent()}</div>
+        ${this._renderAppContent()}
       </mwc-drawer>
     `;
   }
@@ -81,15 +88,23 @@ export class ChatMicroservice extends LitElement {
   _renderAppContent() {
     switch (this.currentView) {
       case 'login':
-        return html`<main>
-          <login-view
-            .userName="${this.userName}"
-            @execute-search="${e => page(`/chat/${e.detail.userName}`)}"
-          ></login-view>
-        </main>`;
+        return html`
+          <div slot="appContent" class="loginView">
+            <main>
+              <login-view
+                .userName="${this.userName}"
+                @execute-search="${e => page(`/chat/${e.detail.userName}`)}"
+              ></login-view>
+            </main>
+          </div>
+        `;
       case 'chat':
-        return html` <mwc-top-app-bar>${this._renderHeader()}</mwc-top-app-bar>
-          <main><chat-view .userName="${this.userName}"> </chat-view></main>`;
+        return html`
+          <div slot="appContent">
+            <mwc-top-app-bar>${this._renderHeader()}</mwc-top-app-bar>
+            <main><chat-view .userName="${this.userName}"> </chat-view></main>
+          </div>
+        `;
       default:
         return html` <mwc-top-app-bar
           >${this._renderHeader()}</mwc-top-app-bar

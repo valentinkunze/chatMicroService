@@ -3,8 +3,9 @@ import '../components/UserList.js';
 import '../components/UserItem.js';
 import '../components/MessageList.js';
 import '../components/MessageItem.js';
-import '../components/UserSearchItem.js';
+import '../components/SearchUsersItem.js';
 import '../components/MessageHeaderItem.js';
+import '../components/SendMessageItem.js';
 
 export class ChatView extends LitElement {
   static get properties() {
@@ -19,12 +20,14 @@ export class ChatView extends LitElement {
 
   constructor() {
     super();
+
+    const nowString = new Date().toLocaleTimeString('de-DE').split(' ');
     this.users = [
-      { id: 1, name: 'Valentin', isOnline: true },
       { id: 2, name: 'Noah', isOnline: true },
       { id: 3, name: 'Louisa', isOnline: true },
-      { id: 4, name: 'Valentin', isOnline: true },
+      { id: 1, name: 'Valentin', isOnline: true },
       { id: 5, name: 'Noah', isOnline: true },
+      { id: 4, name: 'Eric', isOnline: true },
       { id: 6, name: 'Louisa', isOnline: false },
       { id: 7, name: 'Valentin', isOnline: false },
       { id: 8, name: 'Noah', isOnline: false },
@@ -32,39 +35,28 @@ export class ChatView extends LitElement {
     ];
     this.messages = [
       {
-        senderName: 'Valentin',
-        sendTime: '18:30',
-        messageContent: 'Yoyo what up?',
+        senderName: 'WelcomeBot',
+        sendTime: nowString,
+        messageContent: 'Guten Morgen!',
       },
       {
-        senderName: 'Noah',
-        sendTime: '18:30',
-        messageContent: 'Yoyo what up?',
+        senderName: 'WelcomeBot',
+        sendTime: nowString,
+        messageContent: 'Guten Tag!',
       },
       {
-        senderName: 'Louisa',
-        sendTime: '18:30',
-        messageContent: 'Yoyo what up?',
-      },
-      {
-        senderName: 'Valentin',
-        sendTime: '18:30',
-        messageContent: 'Yoyo what up?',
-      },
-      {
-        senderName: 'Noah',
-        sendTime: '18:30',
-        messageContent: 'Yoyo what up?',
+        senderName: 'WelcomeBot',
+        sendTime: nowString,
+        messageContent: 'Schönen Abend!',
       },
     ];
     this.searchUserName = 'Valentin';
-    this.selectedUserName = 'Valentin';
+    this.selectedUserName = 'WelcomeBot';
   }
 
   static get styles() {
     return css`
       .chat {
-        display: flex;
         background-color: hsl(0, 0%, 96%);
       }
 
@@ -72,26 +64,74 @@ export class ChatView extends LitElement {
         border-right: 10px solid;
         border-right-color: var(--background-color);
       }
+
+      .headerSection {
+        display: flex;
+      }
+
+      .userSearchItem {
+        width: 40ch;
+        max-width: 30vw;
+        border-right: 10px solid;
+        border-right-color: var(--background-color);
+        border-bottom: 10px solid;
+        border-bottom-color: var(--background-color);
+      }
+
+      .messageHeaderItem {
+        width: 120ch;
+        max-width: 90vw;
+        border-bottom: 10px solid;
+        border-bottom-color: var(--background-color);
+      }
+
+      .bodySection {
+        display: flex;
+      }
+
+      .userList {
+        border-right: 10px solid;
+        border-right-color: var(--background-color);
+      }
+
+      .messageSection {
+        position: relative;
+      }
+
+      .sendMessage {
+        width: 120ch;
+        max-width: 90vw;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
     `;
-    // flex: inline-flex;
   }
 
   render() {
-    // TODO add send field for writing messages and add sendMessage()
-
     return html`
       <div class="chat">
-        <div class="users">
-          <user-search-item>
-            .searchUserName="${this.searchUserName}"
-          </user-search-item>
-          <user-list .users="${this.users}"> </user-list>
+        <div class="headerSection">
+          <div class="userSearchItem">
+            <search-users-item>
+              .searchUserName="${this.searchUserName}"
+            </search-users-item>
+          </div>
+          <div class="messageHeaderItem">
+            <message-header-item
+              .selectedUserName="${this.selectedUserName}"
+            ></message-header-item>
+          </div>
         </div>
-        <div class="messages">
-          <message-header-item
-            .selectedUserName="${this.selectedUserName}"
-          ></message-header-item>
-          <message-list .messages="${this.messages}"> </message-list>
+
+        <div class="bodySection">
+          <user-list class="userList" .users="${this.users}"> </user-list>
+          <div class="messageSection">
+            <message-list .messages="${this.messages}"> </message-list>
+            <div class="sendMessage">
+              <send-message-item></send-message-item>
+            </div>
+          </div>
         </div>
       </div>
     `;

@@ -20,41 +20,53 @@ export class LoginView extends LitElement {
         flex-direction: column;
       }
 
-      leaflet-map {
-        flex: 1;
-
-        /* stretch to edges */
-        margin-left: calc(var(--chat-container-padding) * -1);
-        margin-right: calc(var(--chat-container-padding) * -1);
-        margin-bottom: calc(var(--chat-container-padding) * -1);
+      .search-form {
+        margin: auto;
       }
 
-      .search-form {
-        margin-bottom: 1rem;
+      .search-form > div {
+        margin: auto;
+      }
+
+      .mwcTextfield {
+        border-bottom: 10px solid transparent;
+      }
+
+      .mwcTextfield > mwc-textfield {
+        background-color: hsl(0, 0%, 92%);
+      }
+
+      mwc-button {
+        display: flex;
       }
     `;
   }
 
   render() {
     return html`
-      <h1>Login</h1>
-
       <div class="search-form">
-        <mwc-textfield
-          label="UserName"
-          .value="${this.userName !== 'default' ? this.userName : ' '}"
-          @keyup="${e => {
-            this.userName = e.target.value;
-            this.hasChosenName = true;
-          }}"
-        ></mwc-textfield>
-
-        <mwc-button
-          raised
-          label="Enter Chat"
-          @click="${this._triggerEnterChat}"
-          .disabled="${!this._canEnterChat()}"
-        ></mwc-button>
+        <div class="mwcTextfield">
+          <mwc-textfield
+            label="UserName"
+            .value="${this.userName !== 'default' ? this.userName : ''}"
+            @keyup="${e => {
+              this.userName = e.target.value;
+              this.hasChosenName = true;
+            }}"
+            @keydown="${e => {
+              if (e.key === 'Enter') {
+                this._triggerEnterChat();
+              }
+            }}}"
+          ></mwc-textfield>
+        </div>
+        <div class="mwcButton">
+          <mwc-button
+            raised
+            label="Enter Chat"
+            @click="${this._triggerEnterChat}"
+          ></mwc-button>
+        </div>
       </div>
     `;
   }
@@ -64,7 +76,6 @@ export class LoginView extends LitElement {
   }
 
   _triggerEnterChat() {
-    // TODO goOnline()
     this.dispatchEvent(
       new CustomEvent('execute-search', {
         detail: {
